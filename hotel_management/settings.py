@@ -87,9 +87,9 @@ WSGI_APPLICATION = 'hotel_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'your_database_name',  # Replace with your MySQL database name
+        'NAME': 'new_db',  # Replace with your MySQL database name
         'USER': 'root',  # Replace with your MySQL username
-        'PASSWORD': 'your_user_password',  # Replace with your MySQL password
+        'PASSWORD': 'Root',  # Replace with your MySQL password
         'HOST': '127.0.0.1',  # Or your MySQL host
         'PORT': '3306',  # Default MySQL port
     }

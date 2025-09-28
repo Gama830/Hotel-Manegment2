@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from discount_master.models import DiscountMaster
 
 class ReservationSource(models.Model):
     SOURCE_TYPE_CHOICES = [
@@ -21,6 +22,7 @@ class ReservationSource(models.Model):
     is_active = models.BooleanField(default=True)
     website_url = models.URLField(blank=True)
     notes = models.TextField(blank=True)
+    available_discounts = models.ManyToManyField(DiscountMaster, blank=True, related_name='reservation_sources')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -29,6 +31,26 @@ class ReservationSource(models.Model):
             # Generate a unique source ID
             self.source_id = f"RS{str(uuid.uuid4())[:8].upper()}"
         super().save(*args, **kwargs)
+
+    def get_applicable_discounts(self):
+        """Get all active discounts available for this reservation source"""
+        return self.available_discounts.all()
+    
+    def can_apply_discount(self, discount_id):
+        """Check if a specific discount can be applied for this reservation source"""
+        return self.available_discounts.filter(discount_id=discount_id).exists()
+    
+    def calculate_discount_amount(self, base_amount, discount_id):
+        """Calculate discount amount for a given base amount and discount"""
+        try:
+            discount = self.available_discounts.get(discount_id=discount_id)
+            if discount.discount_value.endswith('%'):
+                percent = float(discount.discount_value.rstrip('%'))
+                return base_amount * (percent / 100)
+            else:
+                return float(discount.discount_value)
+        except:
+            return 0
 
     def __str__(self):
         return self.name

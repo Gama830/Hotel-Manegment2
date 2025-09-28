@@ -1,23 +1,74 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservation_sources.css' %}" />
+{% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
-    <div class="content-header">
-        <h1>{{ title }}</h1>
+<div class="page-container">
+    <div class="list-header">
+        <h1 class="list-title">Delete Reservation Source</h1>
+        <a href="{% url 'reservation-source-detail' source.id %}" class="btn btn-secondary">
+            Back to Details
+        </a>
     </div>
 
-    <div class="content-body">
-        <div class="card">
-            <div class="card-body">
-                <p>Are you sure you want to delete the reservation source "{{ source.name }}"?</p>
-                <p class="text-danger">This action cannot be undone.</p>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
-                    <a href="{% url 'reservation-source-list' %}" class="btn btn-secondary">Cancel</a>
-                </form>
+    <div class="form-container">
+        <div class="form-section">
+            <div class="section-header" style="background: #f8d7da; color: #721c24;">
+                <span class="section-icon">⚠️</span>
+                <span class="section-title">Warning</span>
             </div>
+            <div class="section-content">
+                <div class="alert alert-warning" style="margin-bottom: 20px;">
+                    <p style="margin: 0;">
+                        Are you sure you want to delete the reservation source <strong>"{{ source.name }}"</strong>?
+                        <br><strong>This action cannot be undone.</strong>
+                    </p>
+                </div>
+
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Source ID:</strong>
+                        <span>{{ source.source_id|default:"-" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Name:</strong>
+                        <span>{{ source.name }}</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Type:</strong>
+                        <span>{{ source.get_source_type_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Status:</strong>
+                        <span>
+                            {% if source.is_active %}
+                                <span class="status-active">Active</span>
+                            {% else %}
+                                <span class="status-inactive">Inactive</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions" style="justify-content: center;">
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    Yes, Delete Permanently
+                </button>
+            </form>
+            <a href="{% url 'reservation-source-detail' source.id %}" class="btn btn-secondary">
+                Cancel
+            </a>
         </div>
     </div>
 </div>

@@ -1,112 +1,161 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservation_sources.css' %}" />
+{% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
-    <div class="content-header">
-        <h1>{{ title }}</h1>
-        <div class="actions">
+<div class="page-container">
+    <div class="list-header">
+        <h1 class="list-title">{{ source.name }}</h1>
+        <div style="display: flex; gap: 10px;">
             <a href="{% url 'reservation-source-update' source.id %}" class="btn btn-warning">
-                <i class="fas fa-edit"></i> Edit
+                Edit
+            </a>
+            <a href="{% url 'reservation-source-delete' source.id %}" class="btn btn-danger">
+                Delete
             </a>
             <a href="{% url 'reservation-source-list' %}" class="btn btn-secondary">
-                ← Back to Sources
+                Back to List
             </a>
         </div>
     </div>
 
-    <div class="content-body">
-        <div class="card">
-            <div class="card-body">
-                <div class="section">
-                    <h3 class="section-title">📋 Basic Information</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Source ID:</label>
-                            <span>{{ source.source_id }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Name:</label>
-                            <span>{{ source.name }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Type:</label>
-                            <span>{{ source.get_source_type_display }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Status:</label>
-                            <span class="badge {% if source.is_active %}badge-success{% else %}badge-danger{% endif %}">
-                                {{ source.is_active|yesno:"Active,Inactive" }}
-                            </span>
-                        </div>
+    <div class="form-container">
+        <div class="form-section">
+            <div class="section-header">
+                <!-- <span class="section-icon">📋</span> -->
+                <span class="section-title">📋 Basic Information</span>
+            </div>
+            <div class="section-content">
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Source ID:</strong>
+                        <span>{{ source.source_id|default:"-" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Name:</strong>
+                        <span>{{ source.name }}</span>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Type:</strong>
+                        <span>{{ source.get_source_type_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Status:</strong>
+                        <span>
+                            {% if source.is_active %}
+                                <span class="status-active">Active</span>
+                            {% else %}
+                                <span class="status-inactive">Inactive</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="section">
-                    <h3 class="section-title">📞 Contact Information</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Contact Person:</label>
-                            <span>{{ source.contact_person|default:"--" }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Email:</label>
-                            <span>{{ source.email|default:"--" }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Phone:</label>
-                            <span>{{ source.phone|default:"--" }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Website:</label>
-                            <span>
-                                {% if source.website_url %}
+        <div class="form-section">
+            <div class="section-header">
+                <!-- <span class="section-icon">📞</span> -->
+                <span class="section-title">📞 Contact Information</span>
+            </div>
+            <div class="section-content">
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Contact Person:</strong>
+                        <span>{{ source.contact_person|default:"-" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Email:</strong>
+                        <span>
+                            {% if source.email %}
+                                <a href="mailto:{{ source.email }}">{{ source.email }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Phone:</strong>
+                        <span>
+                            {% if source.phone %}
+                                <a href="tel:{{ source.phone }}">{{ source.phone }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Website:</strong>
+                        <span>
+                            {% if source.website_url %}
                                 <a href="{{ source.website_url }}" target="_blank">{{ source.website_url }}</a>
-                                {% else %}
-                                --
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    {% if source.address %}
-                    <div class="mt-3">
-                        <label>Address:</label>
-                        <p class="mb-0">{{ source.address }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="section">
-                    <h3 class="section-title">💰 Financial Information</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Commission Rate:</label>
-                            <span>{{ source.commission_rate }}%</span>
-                        </div>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-
-                {% if source.notes %}
-                <div class="section">
-                    <h3 class="section-title">📝 Additional Information</h3>
-                    <div class="notes">
-                        {{ source.notes|linebreaks }}
+                {% if source.address %}
+                <div class="form-row">
+                    <div class="detail-item full-width">
+                        <strong>Address:</strong>
+                        <span>{{ source.address|linebreaks }}</span>
                     </div>
                 </div>
                 {% endif %}
+            </div>
+        </div>
 
-                <div class="section">
-                    <h3 class="section-title">⏱️ Timestamps</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Created:</label>
-                            <span>{{ source.created_at }}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Last Updated:</label>
-                            <span>{{ source.updated_at }}</span>
+        <div class="form-section">
+            <div class="section-header">
+                <!-- <span class="section-icon">💰</span> -->
+                <span class="section-title">💰 Business Details</span>
+            </div>
+            <div class="section-content">
+                <div class="form-row">
+                    <div class="detail-item">
+                        <strong>Commission Rate:</strong>
+                        <span>{{ source.commission_rate }}%</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Created:</strong>
+                        <span>{{ source.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="detail-item full-width">
+                        <strong>Available Discounts:</strong>
+                        <div class="discount-list">
+                            {% if source.available_discounts.all %}
+                                {% for discount in source.available_discounts.all %}
+                                    <div class="discount-item">
+                                        <span class="discount-name">{{ discount.description }}</span>
+                                        <span class="discount-value">{{ discount.discount_value }}</span>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <span class="no-discounts">No discounts available</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
+                {% if source.notes %}
+                <div class="form-row">
+                    <div class="detail-item full-width">
+                        <strong>Notes:</strong>
+                        <span>{{ source.notes|linebreaks }}</span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

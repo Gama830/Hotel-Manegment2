@@ -1,12 +1,13 @@
 from django import forms
 from .models import ReservationSource
+from discount_master.models import DiscountMaster
 
 class ReservationSourceForm(forms.ModelForm):
     class Meta:
         model = ReservationSource
         fields = [
             'source_id', 'name', 'source_type', 'contact_person', 'email', 'phone',
-            'address', 'commission_rate', 'is_active', 'website_url', 'notes'
+            'address', 'commission_rate', 'is_active', 'website_url', 'notes', 'available_discounts'
         ]
 
         widgets = {
@@ -48,6 +49,9 @@ class ReservationSourceForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
+            'available_discounts': forms.CheckboxSelectMultiple(attrs={
+                'class': 'discount-checkbox-list'
+            }),
             'website_url': forms.URLInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'https://example.com'
@@ -71,4 +75,11 @@ class ReservationSourceForm(forms.ModelForm):
             'is_active': 'Active',
             'website_url': 'Website URL',
             'notes': 'Notes',
+            'available_discounts': 'Available Discounts',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize the available_discounts field
+        self.fields['available_discounts'].queryset = DiscountMaster.objects.all()
+        self.fields['available_discounts'].help_text = 'Select multiple discounts that can be applied for bookings from this source'
