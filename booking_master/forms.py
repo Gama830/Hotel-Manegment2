@@ -7,6 +7,21 @@ from rate.models import RatePlan
 from rooms.models import RoomType
 
 class BookingForm(forms.ModelForm):
+    booking_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        required=True,
+        label='Booking Date'
+    )
+    booking_time = forms.TimeField(
+        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+        required=True,
+        label='Booking Time'
+    )
+    gst_number = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'GST Number'}),
+        required=False,
+        label='GST Number'
+    )
     time_slot = forms.ModelChoiceField(
         queryset=TimeslotMaster.objects.none(),
         required=True,
@@ -55,6 +70,7 @@ class BookingForm(forms.ModelForm):
                 'class': 'form-control',
                 'id': 'id_reservation_source'
             }),
+            # booking_date, booking_time, gst_number handled above
         }
 
     def __init__(self, *args, **kwargs):
