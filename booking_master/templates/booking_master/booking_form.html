@@ -118,8 +118,6 @@
           <div>
             <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Room Price</label>
             <input type="text" id="room_price" class="form-control" readonly value="" placeholder="Select Room Type & Time Slot">
-            <!-- Price Breakup Div -->
-            <div id="price_breakup" style="margin-top: 10px; background: #f4f6fb; border-radius: 6px; padding: 12px; color: #333; display: none;"></div>
           </div>
           <div>
             <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">{{ form.reservation_source.label }}</label>
@@ -128,6 +126,14 @@
               <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">{{ form.reservation_source.errors }}</div>
             {% endif %}
           </div>
+          <!-- Coupon/Discount Selection Div -->
+        <div id="coupon_section" style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Select Coupon/Discount</label>
+          <select id="id_coupon" name="coupon" class="form-control">
+            <option value="">---------</option>
+          </select>
+          <div id="coupon_info" style="color: #667eea; font-size: 14px; margin-top: 5px;"></div>
+        </div>
           <div>
             <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">{{ form.payment_method.label }}</label>
             {{ form.payment_method }}
@@ -143,6 +149,8 @@
             {% endif %}
           </div>
         </div>
+        <!-- Price Breakup Div -->
+          <div id="price_breakup" style="margin-top: 10px; background: #f4f6fb; border-radius: 6px; padding: 12px; color: #333; display: none;"></div>
       </div>
 
       <!-- Form Errors -->
@@ -198,24 +206,30 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateDiscountedPrice() {
-    var roomTypeId = roomType.value;
-    var timeSlotId = timeSlotSelect.value;
-    var reservationSourceId = reservationSource.value;
     var basePrice = priceInput.value && !isNaN(priceInput.value) ? parseFloat(priceInput.value) : null;
-    if (roomTypeId && timeSlotId && reservationSourceId && basePrice) {
-      fetch('/booking_master/ajax/get_commission_rate/?reservation_source_id=' + reservationSourceId)
-        .then(response => response.json())
-        .then(data => {
-          var commissionRate = data.commission_rate ? parseFloat(data.commission_rate) : 0;
-          var discount = (basePrice * commissionRate) / 100;
-          var finalPrice = basePrice - discount;
-          priceBreakupDiv.style.display = 'block';
-          priceBreakupDiv.innerHTML =
-            '<b>Price Breakup:</b><br>' +
-            'Base Price: ₹' + basePrice.toFixed(2) + '<br>' +
-            'Discount (' + commissionRate.toFixed(2) + '%): -₹' + discount.toFixed(2) + '<br>' +
-            '<b>Final Price: ₹' + finalPrice.toFixed(2) + '</b>';
-        });
+    var couponSelect = document.getElementById('id_coupon');
+    var selectedCoupon = couponSelect && couponSelect.value ? couponSelect.options[couponSelect.selectedIndex] : null;
+    if (basePrice && selectedCoupon && selectedCoupon.value) {
+      // Parse discount value from option text (e.g., "10%" or "100")
+      var discountText = selectedCoupon.text.match(/\(([^)]+)\)$/);
+      var discountValue = discountText ? discountText[1] : null;
+      var discount = 0;
+      var finalPrice = basePrice;
+      if (discountValue) {
+        if (discountValue.endsWith('%')) {
+          var percent = parseFloat(discountValue.replace('%', ''));
+          discount = (basePrice * percent) / 100;
+        } else {
+          discount = parseFloat(discountValue);
+        }
+        finalPrice = basePrice - discount;
+      }
+      priceBreakupDiv.style.display = 'block';
+      priceBreakupDiv.innerHTML =
+        '<b>Price Breakup:</b><br>' +
+        'Base Price: ₹' + basePrice.toFixed(2) + '<br>' +
+        'Discount (' + (discountValue ? discountValue : '') + '): -₹' + discount.toFixed(2) + '<br>' +
+        '<b>Final Price: ₹' + finalPrice.toFixed(2) + '</b>';
     } else {
       priceBreakupDiv.style.display = 'none';
       priceBreakupDiv.innerHTML = '';
@@ -244,7 +258,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
   reservationSource.addEventListener('change', function() {
     updateDiscountedPrice();
+    // Fetch available discounts/coupons for selected reservation source
+    var sourceId = reservationSource.value;
+    var couponSection = document.getElementById('coupon_section');
+    var couponSelect = document.getElementById('id_coupon');
+    var couponInfo = document.getElementById('coupon_info');
+    couponSelect.innerHTML = '<option value="">---------</option>';
+    couponInfo.innerHTML = '';
+    if (sourceId) {
+      fetch('/booking_master/ajax/get_available_discounts/?reservation_source_id=' + sourceId)
+        .then(response => response.json())
+        .then(data => {
+          if (data.discounts && data.discounts.length > 0) {
+            data.discounts.forEach(function(discount) {
+              var opt = document.createElement('option');
+              opt.value = discount.id;
+              opt.text = discount.description + ' (' + discount.discount_value + ')';
+              couponSelect.appendChild(opt);
+            });
+            couponSection.style.display = 'block';
+          } else {
+            // couponSection.style.display = 'none';
+          }
+        });
+    } else {
+      couponSection.style.display = 'none';
+    }
   });
+
+  // Show info about selected coupon/discount
+  var couponSelect = document.getElementById('id_coupon');
+  var couponInfo = document.getElementById('coupon_info');
+  if (couponSelect) {
+    couponSelect.addEventListener('change', function() {
+      var selected = couponSelect.options[couponSelect.selectedIndex];
+      if (selected && selected.value) {
+        couponInfo.innerHTML = selected.text;
+      } else {
+        couponInfo.innerHTML = '';
+      }
+      updateDiscountedPrice();
+    });
+  }
 });
 </script>
 <style>

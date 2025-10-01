@@ -45,6 +45,7 @@ def booking_success(request):
 
 # AJAX endpoint to get commission_rate for reservation_source
 from reservation_source_master.models import ReservationSource
+
 def get_commission_rate(request):
     source_id = request.GET.get('reservation_source_id')
     commission_rate = 0
@@ -55,3 +56,20 @@ def get_commission_rate(request):
         except ReservationSource.DoesNotExist:
             commission_rate = 0
     return JsonResponse({'commission_rate': commission_rate})
+
+# AJAX endpoint to get available discounts for reservation_source
+def get_available_discounts(request):
+    source_id = request.GET.get('reservation_source_id')
+    discounts = []
+    if source_id:
+        try:
+            source = ReservationSource.objects.get(id=source_id)
+            for discount in source.available_discounts.all():
+                discounts.append({
+                    'id': discount.discount_id,
+                    'description': discount.description,
+                    'discount_value': discount.discount_value
+                })
+        except ReservationSource.DoesNotExist:
+            pass
+    return JsonResponse({'discounts': discounts})
