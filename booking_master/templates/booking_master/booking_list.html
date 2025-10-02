@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Master{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking_master.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="list-header">
+        <h1 class="list-title">Booking Master</h1>
+        <div class="header-buttons">
+            <a href="{% url 'booking_create' %}" class="btn btn-primary">
+                ➕ New Booking
+            </a>
+        </div>
+    </div>
+
+    <div class="list-summary">
+        Total {{ bookings|length }} booking{{ bookings|length|pluralize }}
+    </div>
+
+    <div class="list-table-container">
+        {% if bookings %}
+        <table class="list-table">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Customer Name</th>
+                    <th>Contact</th>
+                    <th>Room Type</th>
+                    <th>Booking Date</th>
+                    <th>Time Slot</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>
+                        <span class="booking-id">{{ booking.booking_id }}</span>
+                    </td>
+                    <td>
+                        <div class="customer-name">{{ booking.customer_first_name }} {{ booking.customer_last_name }}</div>
+                        <small class="text-muted">{{ booking.id_proof_type }}</small>
+                        {% if booking.applied_discount %}
+                        <div><small class="text-success">🎫 {{ booking.applied_discount.description }}</small></div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div>📞 {{ booking.phone_number }}</div>
+                        <small class="text-muted">✉️ {{ booking.email }}</small>
+                    </td>
+                    <td>
+                        <span class="room-type">{{ booking.room_type }}</span>
+                    </td>
+                    <td>
+                        <div class="booking-date">{{ booking.booking_date|date:"M d, Y" }}</div>
+                        <small class="text-muted">🕐 {{ booking.booking_time|time:"H:i" }}</small>
+                    </td>
+                    <td>
+                        <div>{{ booking.time_slot }}</div>
+                        <small class="text-muted">{{ booking.reservation_source }}</small>
+                    </td>
+                    <td>
+                        <span class="payment-method">{{ booking.get_payment_method_display }}</span>
+                        <div style="margin-top: 4px; font-weight: 600; color: #28a745;">₹{{ booking.total_amount }}</div>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'booking_detail' booking.booking_id %}" 
+                               class="btn btn-sm btn-info">👁️ View</a>
+                            <a href="{% url 'booking_edit' booking.booking_id %}" 
+                               class="btn btn-sm btn-warning">✏️ Edit</a>
+                            <a href="{% url 'booking_delete' booking.booking_id %}" 
+                               class="btn btn-sm btn-danger">🗑️ Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state-cell">
+            <p>No bookings found.</p>
+            <a href="{% url 'booking_create' %}" class="btn btn-primary">Create the first booking</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

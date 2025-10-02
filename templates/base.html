@@ -94,7 +94,7 @@
             </div>
             <div class="nav-dropdown-menu">
               <div class="nav-dropdown-item">
-                <a href="{% url 'create_booking' %}">📋 Create Booking</a>
+                <a href="{% url 'booking_list' %}">📋 Booking Master</a>
               </div>
               <div class="nav-dropdown-item">
                 <a href="{% url 'reservation-source-list' %}">🌐 Reservation Sources</a>
@@ -212,16 +212,23 @@
           </li>
           <!-- Discount Master -->
           <li class="nav-item">
-            <a href="{% url 'discount_list' %}" class="nav-link" data-tooltip="Timeslot Master">
-              <span class="nav-icon">💸</span>
+            <a href="{% url 'discount_list' %}" class="nav-link" data-tooltip="Discount Master">
+              <span class="nav-icon">🎫</span>
               <span>Discount Master</span>
             </a>
           </li>
           <!-- Booking Master -->
           <li class="nav-item">
-            <a href="{% url 'create_booking' %}" class="nav-link" data-tooltip="Timeslot Master">
-              <span class="nav-icon">💸</span>
+            <a href="{% url 'booking_list' %}" class="nav-link" data-tooltip="Booking Master">
+              <span class="nav-icon">� </span>
               <span>Booking Master</span>
+            </a>
+          </li>
+          <!-- Reservation Sources -->
+          <li class="nav-item">
+            <a href="{% url 'reservation-source-list' %}" class="nav-link" data-tooltip="Reservation Sources">
+              <span class="nav-icon">🏢</span>
+              <span>Reservation Sources</span>
             </a>
           </li>
           <li class="nav-item">

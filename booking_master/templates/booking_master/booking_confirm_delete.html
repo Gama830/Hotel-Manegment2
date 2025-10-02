@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Booking - {{ booking.booking_id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking_master.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <h1>Delete Booking</h1>
+        <a href="{% url 'booking_list' %}" class="btn btn-secondary">
+            ← Back to Bookings
+        </a>
+    </div>
+
+    <div class="content-body">
+        <div class="section">
+            <h3 class="section-title" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+                ⚠️ Confirm Deletion
+            </h3>
+            <div class="section-content">
+                <div class="alert alert-danger mb-4" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 20px; border-radius: 8px;">
+                    <h5 style="margin: 0 0 10px 0;">⚠️ Warning: This action cannot be undone!</h5>
+                    <p style="margin: 0;">Are you sure you want to permanently delete this booking? All associated data will be lost.</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>📋 Booking Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Booking ID</span>
+                        <span class="detail-value highlight">#{{ booking.booking_id }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Customer Name</span>
+                        <span class="detail-value">{{ booking.customer_first_name }} {{ booking.customer_last_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone Number</span>
+                        <span class="detail-value">📞 {{ booking.phone_number }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">✉️ {{ booking.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Room Type</span>
+                        <span class="detail-value">{{ booking.room_type }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Booking Date</span>
+                        <span class="detail-value">📅 {{ booking.booking_date|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Time Slot</span>
+                        <span class="detail-value">🕐 {{ booking.time_slot }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Payment Method</span>
+                        <span class="detail-value">💳 {{ booking.get_payment_method_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-secondary">
+                Cancel
+            </a>
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    🗑️ Yes, Delete Booking
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,43 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Successful{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking_master.css' %}" />
+{% endblock %}
+
 {% block content %}
-  <h2>Booking Successful!</h2>
-  <p>Your booking has been recorded.</p>
-  <a href="/">Return Home</a>
+<div class="content-wrapper">
+    <div class="content-body">
+        <div class="detail-container">
+            <div class="detail-header" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <h2>🎉 Booking Successful!</h2>
+                <p>Your booking has been created successfully and is now confirmed.</p>
+            </div>
+
+            <div class="detail-content text-center">
+                <div class="success-message" style="padding: 40px; background: #d4edda; border-radius: 12px; margin-bottom: 30px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+                    <h3 style="color: #155724; margin-bottom: 15px;">Booking Confirmed!</h3>
+                    <p style="color: #155724; font-size: 16px; margin: 0;">
+                        Thank you for your booking. You will receive a confirmation email shortly.
+                    </p>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'booking_list' %}" class="btn btn-primary">
+                        📋 View All Bookings
+                    </a>
+                    <a href="{% url 'booking_create' %}" class="btn btn-success">
+                        ➕ Create Another Booking
+                    </a>
+                    <a href="/" class="btn btn-secondary">
+                        🏠 Return to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

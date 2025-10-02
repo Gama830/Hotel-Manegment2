@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Details - {{ booking.booking_id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking_master.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <h1>Booking Details</h1>
+        <div class="header-buttons">
+            <a href="{% url 'booking_edit' booking.booking_id %}" class="btn btn-warning">
+                ✏️ Edit Booking
+            </a>
+            <a href="{% url 'booking_list' %}" class="btn btn-secondary">
+                ← Back to Bookings
+            </a>
+        </div>
+    </div>
+
+    <div class="detail-container">
+        <div class="detail-header">
+            <h2>Booking #{{ booking.booking_id }}</h2>
+            <p>{{ booking.customer_first_name }} {{ booking.customer_last_name }} • {{ booking.booking_date|date:"M d, Y" }}</p>
+        </div>
+
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+                    <h3>👤 Customer Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Full Name</span>
+                        <span class="detail-value highlight">{{ booking.customer_first_name }} {{ booking.customer_last_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone Number</span>
+                        <span class="detail-value">📞 {{ booking.phone_number }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email Address</span>
+                        <span class="detail-value">✉️ {{ booking.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ID Proof Type</span>
+                        <span class="detail-value">{{ booking.get_id_proof_type_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ID Number</span>
+                        <span class="detail-value">{{ booking.id_number }}</span>
+                    </div>
+                    {% if booking.gst_number %}
+                    <div class="detail-item">
+                        <span class="detail-label">GST Number</span>
+                        <span class="detail-value">{{ booking.gst_number }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="detail-section">
+                    <h3>🏨 Booking Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Room Type</span>
+                        <span class="detail-value highlight">{{ booking.room_type }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Time Slot</span>
+                        <span class="detail-value">{{ booking.time_slot }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Booking Date</span>
+                        <span class="detail-value">📅 {{ booking.booking_date|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Booking Time</span>
+                        <span class="detail-value">🕐 {{ booking.booking_time|time:"H:i" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Reservation Source</span>
+                        <span class="detail-value">{{ booking.reservation_source }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Payment Method</span>
+                        <span class="detail-value">💳 {{ booking.get_payment_method_display }}</span>
+                    </div>
+                    {% if booking.applied_discount %}
+                    <div class="detail-item">
+                        <span class="detail-label">Applied Discount</span>
+                        <span class="detail-value highlight">🎫 {{ booking.applied_discount.description }} ({{ booking.applied_discount.discount_value }})</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="detail-section">
+                    <h3>💰 Pricing Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Base Amount</span>
+                        <span class="detail-value">₹{{ booking.base_amount }}</span>
+                    </div>
+                    {% if booking.discount_amount > 0 %}
+                    <div class="detail-item">
+                        <span class="detail-label">Discount Amount</span>
+                        <span class="detail-value" style="color: #dc3545;">-₹{{ booking.discount_amount }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="detail-item" style="border-top: 2px solid #667eea; padding-top: 15px; margin-top: 15px;">
+                        <span class="detail-label" style="font-weight: 700; font-size: 16px;">Total Amount</span>
+                        <span class="detail-value highlight" style="font-weight: 700; font-size: 18px;">₹{{ booking.total_amount }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if booking.id_photo %}
+            <div class="detail-section mt-4">
+                <h3>📄 ID Proof Document</h3>
+                <div class="text-center">
+                    <img src="{{ booking.id_photo.url }}" alt="ID Proof" class="img-fluid" style="max-width: 400px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-actions mt-4">
+                <a href="{% url 'booking_edit' booking.booking_id %}" class="btn btn-warning">
+                    ✏️ Edit Booking
+                </a>
+                <a href="{% url 'booking_delete' booking.booking_id %}" class="btn btn-danger">
+                    🗑️ Delete Booking
+                </a>
+                <a href="{% url 'booking_list' %}" class="btn btn-secondary">
+                    ← Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
